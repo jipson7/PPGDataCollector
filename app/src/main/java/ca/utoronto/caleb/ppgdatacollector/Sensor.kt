@@ -8,6 +8,8 @@ class Sensor(val deviceType: String, val device: UsbDevice) {
 
     val tag = deviceType
 
+    val deviceName = "${device.manufacturerName} ${device.productName}"
+
     companion object {
         val FINGERTIP_SENSOR = "Fingertip Sensor"
         val WRIST_SENSOR = "Wrist Worn Device"

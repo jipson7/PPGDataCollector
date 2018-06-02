@@ -8,9 +8,11 @@ import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.device_info_list
 
 class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
@@ -24,6 +26,8 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
     private val sensorList = mutableListOf<Sensor>()
 
+    private val deviceInfoAdapter = DeviceInfoAdapter(sensorList, this)
+
     private val actionUsbPermission = "ca.utoronto.caleb.ppgdatacollector.action.USB_PERMISSION"
 
 
@@ -31,6 +35,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupBroadcastReceiver()
+        setupRecyclerView()
     }
 
     override fun onDestroy() {
@@ -44,6 +49,12 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         registerReceiver(usbReceiver, filter)
     }
+
+    private fun setupRecyclerView() {
+        device_info_list.layoutManager = LinearLayoutManager(this)
+        device_info_list.adapter = deviceInfoAdapter
+    }
+
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -70,11 +81,15 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
     private fun deviceDetached() {
         stopSensors()
+        Toast.makeText(this, "Sensor disconnected. Restart all sensors.", Toast.LENGTH_LONG).show()
+        sensorList.clear()
+        deviceInfoAdapter.notifyDataSetChanged()
     }
 
     override fun onDeviceTypeSelected(deviceType: String, device: UsbDevice) {
         val sensor = Sensor(deviceType, device)
         sensorList.add(sensor)
+        deviceInfoAdapter.notifyDataSetChanged()
     }
 
     fun btnClickBeginRecording(view: View) {
