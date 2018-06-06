@@ -9,11 +9,11 @@ import android.app.PendingIntent
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.device_info_list
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
@@ -99,7 +99,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
     private fun reset(reason: String) {
         stopSensors()
-        Toast.makeText(this, "$reason. Reconnect all sensors.", Toast.LENGTH_LONG).show()
+        Snackbar.make(coordinatorLayout, "$reason. Reconnect all sensors.", Snackbar.LENGTH_LONG).show()
         sensorList.clear()
         deviceInfoAdapter.notifyDataSetChanged()
     }
@@ -116,7 +116,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
     private fun startSensors() {
         if (sensorList.isEmpty()) {
-            Toast.makeText(this,"No sensors available to monitor.", Toast.LENGTH_LONG).show()
+            Snackbar.make(coordinatorLayout, "No sensors available to monitor", Snackbar.LENGTH_LONG).show()
         }
         for (sensor in sensorList) {
             if (!usbManager.hasPermission(sensor.device)) {

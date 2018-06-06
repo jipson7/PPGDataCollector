@@ -2,7 +2,6 @@ package ca.utoronto.caleb.ppgdatacollector
 
 import android.content.Context
 import android.hardware.usb.UsbDevice
-import android.hardware.usb.UsbManager
 import android.util.Log
 import ca.utoronto.caleb.ppgdatacollector.readers.GroundTruthReader
 
@@ -25,7 +24,7 @@ class Sensor(val deviceType: String, val device: UsbDevice, context: Context) {
         else -> GroundTruthReader(context, device)
     }
 
-    val thread: Thread = Thread(reader)
+    private val thread: Thread = Thread(reader)
 
     fun start() {
         Log.d(tag, "Starting Sensor")
