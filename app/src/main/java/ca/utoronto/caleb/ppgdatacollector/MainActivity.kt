@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.app.PendingIntent
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
@@ -30,12 +31,18 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
     private val actionUsbPermission = "ca.utoronto.caleb.ppgdatacollector.action.USB_PERMISSION"
 
+    private lateinit var usbManager: UsbManager
+
+    private lateinit var permissionIntent: PendingIntent
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupBroadcastReceiver()
         setupRecyclerView()
+        usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+        permissionIntent = PendingIntent.getBroadcast(this, 0, Intent(actionUsbPermission), 0)
     }
 
     override fun onDestroy() {
@@ -63,6 +70,13 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
                 when (it.action){
                     UsbManager.ACTION_USB_DEVICE_ATTACHED -> deviceAttached(device)
                     UsbManager.ACTION_USB_DEVICE_DETACHED -> deviceDetached()
+                    actionUsbPermission -> {
+                        if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                            startSensors()
+                        } else {
+                            reset("Permission not granted")
+                        }
+                    }
                 }
             }
         }
@@ -80,20 +94,24 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
     }
 
     private fun deviceDetached() {
+        reset("Sensor disconnected")
+    }
+
+    private fun reset(reason: String) {
         stopSensors()
-        Toast.makeText(this, "Sensor disconnected. Restart all sensors.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "$reason. Reconnect all sensors.", Toast.LENGTH_LONG).show()
         sensorList.clear()
         deviceInfoAdapter.notifyDataSetChanged()
     }
 
     override fun onDeviceTypeSelected(deviceType: String, device: UsbDevice) {
-        val sensor = Sensor(deviceType, device)
+        val sensor = Sensor(deviceType, device, this)
         sensorList.add(sensor)
         deviceInfoAdapter.notifyDataSetChanged()
     }
 
     fun btnClickBeginRecording(view: View) {
-            startSensors()
+        startSensors()
     }
 
     private fun startSensors() {
@@ -101,6 +119,10 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
             Toast.makeText(this,"No sensors available to monitor.", Toast.LENGTH_LONG).show()
         }
         for (sensor in sensorList) {
+            if (!usbManager.hasPermission(sensor.device)) {
+                usbManager.requestPermission(sensor.device, permissionIntent)
+                return
+            }
             sensor.start()
         }
     }

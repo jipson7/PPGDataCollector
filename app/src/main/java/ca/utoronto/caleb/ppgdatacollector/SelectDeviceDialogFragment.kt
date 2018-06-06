@@ -12,7 +12,7 @@ class SelectDeviceDialogFragment: DialogFragment() {
 
     private val debugTag = "device_dialog"
 
-    private val deviceTypes = Sensor.DEVICES
+    private val deviceTypes = Sensor.DEVICE_TYPES
 
     lateinit var deviceTypeSelectedCallback: DeviceTypeSelectedCallback
 
