@@ -3,9 +3,8 @@ package ca.utoronto.caleb.ppgdatacollector
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.util.Log
-import ca.utoronto.caleb.ppgdatacollector.readers.FingertipSensorReader
 import ca.utoronto.caleb.ppgdatacollector.readers.GroundTruthReader
-import ca.utoronto.caleb.ppgdatacollector.readers.WristDeviceReader
+import ca.utoronto.caleb.ppgdatacollector.readers.MAX30102Reader
 
 
 class Sensor(val deviceType: String, val device: UsbDevice, context: Context) {
@@ -23,9 +22,9 @@ class Sensor(val deviceType: String, val device: UsbDevice, context: Context) {
 
     private val reader = when (deviceType) {
         GROUND_TRUTH -> GroundTruthReader(context, device)
-        WRIST_SENSOR -> WristDeviceReader(context, device)
-        FINGERTIP_SENSOR -> FingertipSensorReader(context, device)
-        else -> FingertipSensorReader(context, device)
+        WRIST_SENSOR -> MAX30102Reader(context, device, motion = true)
+        FINGERTIP_SENSOR -> MAX30102Reader(context, device)
+        else -> MAX30102Reader(context, device)
     }
 
     private val thread: Thread = Thread(reader)
