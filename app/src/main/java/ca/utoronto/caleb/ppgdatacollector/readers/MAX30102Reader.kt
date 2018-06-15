@@ -15,6 +15,14 @@ class MAX30102Reader(context: Context, device: UsbDevice, val motion: Boolean = 
     private var ratio:Float? = null
     private var correlation:Float? = null
 
+    private var accelerometerX = mutableListOf<Float>()
+    private var accelerometerY = mutableListOf<Float>()
+    private var accelerometerZ = mutableListOf<Float>()
+    private var accelerometerSqrt = mutableListOf<Float>()
+    private var gyroX = mutableListOf<Float>()
+    private var gyroY = mutableListOf<Float>()
+    private var gyroZ = mutableListOf<Float>()
+
     private var endTime: Long? = null
 
     override fun onDataReceived(bytes: ByteArray) {
@@ -36,7 +44,19 @@ class MAX30102Reader(context: Context, device: UsbDevice, val motion: Boolean = 
             "end" -> endTime = System.currentTimeMillis()
             else -> {
                 if (motion) {
-                    // Do motion when here
+                    when(line[0]) {
+                        "accel" -> {
+                            accelerometerX.add(line[1].toFloat())
+                            accelerometerY.add(line[2].toFloat())
+                            accelerometerZ.add(line[3].toFloat())
+                            accelerometerSqrt.add(line[4].toFloat())
+                        }
+                        "gyro" -> {
+                            gyroX.add(line[1].toFloat())
+                            gyroY.add(line[2].toFloat())
+                            gyroZ.add(line[3].toFloat())
+                        }
+                    }
                 }
             }
         }
@@ -50,5 +70,14 @@ class MAX30102Reader(context: Context, device: UsbDevice, val motion: Boolean = 
         hr = null
         ratio = null
         correlation = null
+
+        accelerometerX.clear()
+        accelerometerY.clear()
+        accelerometerZ.clear()
+        accelerometerSqrt.clear()
+
+        gyroX.clear()
+        gyroY.clear()
+        gyroZ.clear()
     }
 }
