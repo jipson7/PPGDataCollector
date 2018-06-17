@@ -3,7 +3,6 @@ package ca.utoronto.caleb.ppgdatacollector.readers
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.util.Log
-import java.nio.charset.Charset
 
 class MAX30102Reader(context: Context, device: UsbDevice, val motion: Boolean = false): AbstractDeviceReader(context, device) {
 
@@ -31,10 +30,7 @@ class MAX30102Reader(context: Context, device: UsbDevice, val motion: Boolean = 
         val byteString = bytes.toString(Charsets.UTF_8)
         if (byteString.isBlank())
             return
-        Log.d(tag, "Incoming bytes from arduino: $byteString")
         val words = byteString.split("\\s+".toRegex())
-                //.map { it.trim() }
-                //.filter { it.isEmpty() }
         when (words.first()) {
             "start" -> {
                 clearData();
@@ -70,16 +66,12 @@ class MAX30102Reader(context: Context, device: UsbDevice, val motion: Boolean = 
                             gyroZ.add(words[3].toFloat())
                         }
                         else -> {
-                            Log.d(tag, "Length of unknown output: ${byteString.length}")
-                            Log.d(tag, "Unkown output: $byteString")
-                            Log.d(tag, "Split words $words")
                             throw Exception("Unknown output from Arduino: $byteString")
                         }
                     }
                 }
             }
         }
-        Log.d(tag, "Data parsed successfully")
     }
 
     private fun saveData() {
