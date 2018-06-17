@@ -2,6 +2,8 @@ package ca.utoronto.caleb.ppgdatacollector.readers
 
 import android.content.Context
 import android.hardware.usb.UsbDevice
+import android.util.Log
+import java.nio.charset.Charset
 
 class MAX30102Reader(context: Context, device: UsbDevice, val motion: Boolean = false): AbstractDeviceReader(context, device) {
 
@@ -26,40 +28,62 @@ class MAX30102Reader(context: Context, device: UsbDevice, val motion: Boolean = 
     private var endTime: Long? = null
 
     override fun onDataReceived(bytes: ByteArray) {
-        val line = bytes.toString().split("\\s+")
-        when (line[0]) {
+        val byteString = bytes.toString(Charsets.UTF_8)
+        if (byteString.isBlank())
+            return
+        Log.d(tag, "Incoming bytes from arduino: $byteString")
+        val words = byteString.split("\\s+".toRegex())
+                //.map { it.trim() }
+                //.filter { it.isEmpty() }
+        when (words.first()) {
             "start" -> {
                 clearData();
                 startTime = System.currentTimeMillis()
             }
-            "offset" -> offsets.add(line[1].toInt())
+            "offset" -> offsets.add(words[1].toInt())
             "led" -> {
-                ir.add(line[1].toInt())
-                red.add(line[2].toInt())
+                ir.add(words[1].toInt())
+                red.add(words[2].toInt())
             }
-            "oxygen" -> oxygen = Pair(line[1].toFloat(), line[2] == "1")
-            "hr" -> hr = Pair(line[1].toInt(), line[2] == "1")
-            "ratio" -> ratio = line[1].toFloat()
-            "correl" -> correlation = line[1].toFloat()
-            "end" -> endTime = System.currentTimeMillis()
+            "oxygen" -> oxygen = Pair(words[1].toFloat(), words[2] == "1")
+            "hr" -> hr = Pair(words[1].toInt(), words[2] == "1")
+            "ratio" -> ratio = words[1].toFloat()
+            "correl" -> correlation = words[1].toFloat()
+            "end" -> {
+                endTime = System.currentTimeMillis()
+                startTime?.let {
+                    saveData()
+                }
+            }
             else -> {
                 if (motion) {
-                    when(line[0]) {
+                    when(words.first()) {
                         "accel" -> {
-                            accelerometerX.add(line[1].toFloat())
-                            accelerometerY.add(line[2].toFloat())
-                            accelerometerZ.add(line[3].toFloat())
-                            accelerometerSqrt.add(line[4].toFloat())
+                            accelerometerX.add(words[1].toFloat())
+                            accelerometerY.add(words[2].toFloat())
+                            accelerometerZ.add(words[3].toFloat())
+                            accelerometerSqrt.add(words[4].toFloat())
                         }
                         "gyro" -> {
-                            gyroX.add(line[1].toFloat())
-                            gyroY.add(line[2].toFloat())
-                            gyroZ.add(line[3].toFloat())
+                            gyroX.add(words[1].toFloat())
+                            gyroY.add(words[2].toFloat())
+                            gyroZ.add(words[3].toFloat())
+                        }
+                        else -> {
+                            Log.d(tag, "Length of unknown output: ${byteString.length}")
+                            Log.d(tag, "Unkown output: $byteString")
+                            Log.d(tag, "Split words $words")
+                            throw Exception("Unknown output from Arduino: $byteString")
                         }
                     }
                 }
             }
         }
+        Log.d(tag, "Data parsed successfully")
+    }
+
+    private fun saveData() {
+        Log.d(tag, "Saving data")
     }
 
     private fun clearData() {

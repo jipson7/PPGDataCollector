@@ -24,7 +24,7 @@ class Sensor(val deviceType: String, val device: UsbDevice, context: Context) {
         GROUND_TRUTH -> GroundTruthReader(context, device)
         WRIST_SENSOR -> MAX30102Reader(context, device, motion = true)
         FINGERTIP_SENSOR -> MAX30102Reader(context, device)
-        else -> MAX30102Reader(context, device)
+        else -> throw IllegalArgumentException("Unknown Device type")
     }
 
     private val thread: Thread = Thread(reader)
