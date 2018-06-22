@@ -3,18 +3,19 @@ import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.SocketException
+import kotlin.concurrent.thread
 import khttp.post as httpPost
 
 object DataWrangler {
 
-    private val tag = "DataWrangler"
+    private const val tag = "DataWrangler"
 
     fun push(data: JSONObject, sensor: Sensor) {
         val time = System.currentTimeMillis()
         Log.d(tag, "$time : $data")
     }
 
-    fun createTrial(name: String, age: Int?, copd: Boolean, info: String): Boolean {
+    fun createTrial(name: String, age: Int?, copd: Boolean, info: String, callback: TrialCreatedCallback) {
         val userJson = JSONObject()
         userJson.put("name", name)
         userJson.put("age", age)
@@ -23,19 +24,20 @@ object DataWrangler {
         trialJson.put("user", userJson)
         trialJson.put("info", info)
         trialJson.put("devices", JSONArray())
-        return post(trialJson)
-    }
-
-    private fun post(data: JSONObject): Boolean {
-        return try {
-            val response = httpPost(
-                    url = "http://127.0.0.1:3000",
-                    data = data
-            )
-            (response.statusCode == 200)
-        } catch (e: SocketException) {
-            Log.d(tag, "Failed to contact server. Is it running?")
-            false
+        thread {
+            try {
+                val response = httpPost(
+                        url = "http://192.168.1.120:3000/trials",
+                        json = trialJson
+                )
+                callback.onTrialCreated(response.statusCode == 200)
+            } catch (e: SocketException) {
+                Log.e(tag, "Failed to contact server. Is it running?")
+                callback.onTrialCreated(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
+
 }

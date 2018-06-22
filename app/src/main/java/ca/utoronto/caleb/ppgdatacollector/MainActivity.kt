@@ -18,7 +18,7 @@ import ca.utoronto.caleb.ppgdatacollector.ui.DeviceTypeSelectedCallback
 import ca.utoronto.caleb.ppgdatacollector.ui.SelectDeviceDialogFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : Activity(), DeviceTypeSelectedCallback {
+class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallback {
 
     private val tag = "main_activity"
 
@@ -114,16 +114,18 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
     }
 
     fun btnClickBeginRecording(view: View) {
-        if (collectUserInformation()) {
-            startSensors()
+        if (sensorList.isEmpty()) {
+            showSnackbar("No sensors available to monitor")
+            return
         }
+        collectUserInformation()
     }
 
-    private fun collectUserInformation(): Boolean {
+    private fun collectUserInformation() {
         val name: String = username.text.toString()
         if (name.isBlank()) {
             showSnackbar("Enter a name.")
-            return false
+            return
         }
 
         val age: Int? = try {
@@ -136,18 +138,18 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
         val info: String = additional_info.text.toString()
 
-        return if (DataWrangler.createTrial(name, age, copd, info)) {
-            true
+        DataWrangler.createTrial(name, age, copd, info, this)
+    }
+
+    override fun onTrialCreated(success: Boolean) {
+        if (success) {
+            startSensors()
         } else {
             showSnackbar("Failed to create Trial.")
-            false
         }
     }
 
     private fun startSensors() {
-        if (sensorList.isEmpty()) {
-            showSnackbar("No sensors available to monitor")
-        }
         for (sensor in sensorList) {
             if (!usbManager.hasPermission(sensor.device)) {
                 usbManager.requestPermission(sensor.device, permissionIntent)
