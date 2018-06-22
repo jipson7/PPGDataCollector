@@ -136,13 +136,17 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
         val info: String = additional_info.text.toString()
 
-        Log.d(tag, "User info: $name, $age, $copd, $info")
-        return true
+        return if (DataWrangler.createTrial(name, age, copd, info)) {
+            true
+        } else {
+            showSnackbar("Failed to create Trial.")
+            false
+        }
     }
 
     private fun startSensors() {
         if (sensorList.isEmpty()) {
-            showSnackbar("No sensors available to monitor");
+            showSnackbar("No sensors available to monitor")
         }
         for (sensor in sensorList) {
             if (!usbManager.hasPermission(sensor.device)) {
