@@ -1,11 +1,13 @@
 package ca.utoronto.caleb.ppgdatacollector.readers
 
 import android.content.Context
-import android.hardware.usb.UsbDevice
 import android.util.Log
 import ca.utoronto.caleb.ppgdatacollector.DataKeys
+import ca.utoronto.caleb.ppgdatacollector.DataPusher
+import ca.utoronto.caleb.ppgdatacollector.Sensor
+import org.json.JSONObject
 
-class GroundTruthReader(context: Context, device: UsbDevice): AbstractDeviceReader(context, device) {
+class GroundTruthReader(context: Context, sensor: Sensor): AbstractDeviceReader(context, sensor.device) {
     override fun onDataReceived(bytes: ByteArray) {
         val dataMap = mutableMapOf<String, Any?>()
         val dataRead = bytes.toHex()
@@ -27,7 +29,8 @@ class GroundTruthReader(context: Context, device: UsbDevice): AbstractDeviceRead
         dataMap[DataKeys.oxygen_valid] = 127 != oxygen
         dataMap[DataKeys.oxygen] = oxygen
 
-        Log.d(tag, "Data: $dataMap")
+        val json = JSONObject(dataMap)
+        DataPusher.push(json)
     }
 
 }

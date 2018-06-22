@@ -21,9 +21,9 @@ class Sensor(val deviceType: String, val device: UsbDevice, context: Context) {
     val deviceName = "${device.manufacturerName} ${device.productName}"
 
     private val reader = when (deviceType) {
-        GROUND_TRUTH -> GroundTruthReader(context, device)
-        WRIST_SENSOR -> MAX30102Reader(context, device)
-        FINGERTIP_SENSOR -> MAX30102Reader(context, device)
+        GROUND_TRUTH -> GroundTruthReader(context, this)
+        WRIST_SENSOR -> MAX30102Reader(context, this)
+        FINGERTIP_SENSOR -> MAX30102Reader(context, this)
         else -> throw IllegalArgumentException("Unknown Device type")
     }
 

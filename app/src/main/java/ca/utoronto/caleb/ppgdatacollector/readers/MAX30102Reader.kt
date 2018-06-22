@@ -1,11 +1,11 @@
 package ca.utoronto.caleb.ppgdatacollector.readers
 
 import android.content.Context
-import android.hardware.usb.UsbDevice
-import android.util.Log
+import ca.utoronto.caleb.ppgdatacollector.DataPusher
 import org.json.JSONObject
+import ca.utoronto.caleb.ppgdatacollector.Sensor
 
-class MAX30102Reader(context: Context, device: UsbDevice): AbstractDeviceReader(context, device) {
+class MAX30102Reader(context: Context, sensor: Sensor): AbstractDeviceReader(context, sensor.device) {
 
 
     override fun onDataReceived(bytes: ByteArray) {
@@ -13,10 +13,6 @@ class MAX30102Reader(context: Context, device: UsbDevice): AbstractDeviceReader(
         if (jsonString.isBlank())
             return
         val json= JSONObject(jsonString)
-        saveData(json)
-    }
-
-    private fun saveData(json: JSONObject) {
-        Log.d(tag, "Saving: $json")
+        DataPusher.push(json)
     }
 }
