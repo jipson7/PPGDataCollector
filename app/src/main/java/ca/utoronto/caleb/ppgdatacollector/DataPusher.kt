@@ -6,9 +6,10 @@ import khttp.post as httpPost
 object DataPusher {
 
     private val tag = "DataPusher"
+    private val trialJson: JSONObject? = null
 
-    fun push(json: JSONObject) {
+    fun push(data: JSONObject, sensor: Sensor) {
         val time = System.currentTimeMillis()
-        Log.d(tag, "$time : $json")
+        Log.d(tag, "$time : $data")
     }
 }

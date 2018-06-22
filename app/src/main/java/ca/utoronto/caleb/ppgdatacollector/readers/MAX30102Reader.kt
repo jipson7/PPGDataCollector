@@ -5,7 +5,7 @@ import ca.utoronto.caleb.ppgdatacollector.DataPusher
 import org.json.JSONObject
 import ca.utoronto.caleb.ppgdatacollector.Sensor
 
-class MAX30102Reader(context: Context, sensor: Sensor): AbstractDeviceReader(context, sensor.device) {
+class MAX30102Reader(context: Context, private val sensor: Sensor): AbstractDeviceReader(context, sensor.device) {
 
 
     override fun onDataReceived(bytes: ByteArray) {
@@ -13,6 +13,6 @@ class MAX30102Reader(context: Context, sensor: Sensor): AbstractDeviceReader(con
         if (jsonString.isBlank())
             return
         val json= JSONObject(jsonString)
-        DataPusher.push(json)
+        DataPusher.push(json, sensor)
     }
 }

@@ -7,7 +7,7 @@ import ca.utoronto.caleb.ppgdatacollector.DataPusher
 import ca.utoronto.caleb.ppgdatacollector.Sensor
 import org.json.JSONObject
 
-class GroundTruthReader(context: Context, sensor: Sensor): AbstractDeviceReader(context, sensor.device) {
+class GroundTruthReader(context: Context, private val sensor: Sensor): AbstractDeviceReader(context, sensor.device) {
     override fun onDataReceived(bytes: ByteArray) {
         val dataMap = mutableMapOf<String, Any?>()
         val dataRead = bytes.toHex()
@@ -30,7 +30,7 @@ class GroundTruthReader(context: Context, sensor: Sensor): AbstractDeviceReader(
         dataMap[DataKeys.oxygen] = oxygen
 
         val json = JSONObject(dataMap)
-        DataPusher.push(json)
+        DataPusher.push(json, sensor)
     }
 
 }
