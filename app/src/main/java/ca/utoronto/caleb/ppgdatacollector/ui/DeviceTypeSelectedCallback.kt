@@ -1,4 +1,4 @@
-package ca.utoronto.caleb.ppgdatacollector
+package ca.utoronto.caleb.ppgdatacollector.ui
 
 import android.hardware.usb.UsbDevice
 

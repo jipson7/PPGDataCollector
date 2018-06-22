@@ -1,4 +1,4 @@
-package ca.utoronto.caleb.ppgdatacollector
+package ca.utoronto.caleb.ppgdatacollector.ui
 
 import android.app.Dialog
 import android.app.DialogFragment
@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.app.AlertDialog
 import android.hardware.usb.UsbDevice
 import android.util.Log
+import ca.utoronto.caleb.ppgdatacollector.Sensor
 
 
 class SelectDeviceDialogFragment: DialogFragment() {

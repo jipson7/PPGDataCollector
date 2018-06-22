@@ -1,10 +1,12 @@
-package ca.utoronto.caleb.ppgdatacollector
+package ca.utoronto.caleb.ppgdatacollector.ui
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import ca.utoronto.caleb.ppgdatacollector.R
+import ca.utoronto.caleb.ppgdatacollector.Sensor
 import kotlinx.android.synthetic.main.device_info_item.view.*
 
 class DeviceInfoAdapter(val sensors: MutableList<Sensor>, val context: Context): RecyclerView.Adapter<ViewHolder>() {
