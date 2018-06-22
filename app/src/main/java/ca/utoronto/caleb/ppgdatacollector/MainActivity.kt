@@ -99,7 +99,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
 
     private fun reset(reason: String) {
         stopSensors()
-        Snackbar.make(coordinatorLayout, "$reason. Reconnect all sensors.", Snackbar.LENGTH_LONG).show()
+        showSnackbar("$reason. Reconnect all sensors.")
         sensorList.clear()
         deviceInfoAdapter.notifyDataSetChanged()
     }
@@ -111,12 +111,35 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
     }
 
     fun btnClickBeginRecording(view: View) {
-        startSensors()
+        if (collectUserInformation()) {
+            startSensors()
+        }
+    }
+
+    private fun collectUserInformation(): Boolean {
+        val name: String = username.text.toString()
+        if (name.isBlank()) {
+            showSnackbar("Enter a name.")
+            return false
+        }
+
+        val age: Int? = try {
+            user_age.text.toString().toInt()
+        } catch (e: NumberFormatException) {
+            null
+        }
+
+        val copd: Boolean = copd_switch.isChecked
+
+        val info: String = additional_info.text.toString()
+
+        Log.d(tag, "User info: $name, $age, $copd, $info")
+        return true
     }
 
     private fun startSensors() {
         if (sensorList.isEmpty()) {
-            Snackbar.make(coordinatorLayout, "No sensors available to monitor", Snackbar.LENGTH_LONG).show()
+            showSnackbar("No sensors available to monitor");
         }
         for (sensor in sensorList) {
             if (!usbManager.hasPermission(sensor.device)) {
@@ -130,5 +153,9 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback {
         for (sensor in sensorList) {
             sensor.stop()
         }
+    }
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show()
     }
 }

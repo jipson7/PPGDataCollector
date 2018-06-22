@@ -3,9 +3,9 @@ import android.util.Log
 import org.json.JSONObject
 import khttp.post as httpPost
 
-object DataPusher {
+object DataWrangler {
 
-    private val tag = "DataPusher"
+    private val tag = "DataWrangler"
     private val trialJson: JSONObject? = null
 
     fun push(data: JSONObject, sensor: Sensor) {

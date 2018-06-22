@@ -40,6 +40,14 @@
             android:layout_height="wrap_content"
             android:text="User has C.O.P.D.?" />
 
+        <EditText
+            android:id="@+id/additional_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Additional User or Trial information."
+            android:inputType="textMultiLine" />
+
         <TextView
             android:id="@+id/devices_header"
             android:layout_width="match_parent"
@@ -62,5 +70,6 @@
         android:src="@android:drawable/ic_media_play"
         android:layout_margin="16dp"
         android:onClick="btnClickBeginRecording"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

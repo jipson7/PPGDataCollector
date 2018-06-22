@@ -1,7 +1,7 @@
 package ca.utoronto.caleb.ppgdatacollector.readers
 
 import android.content.Context
-import ca.utoronto.caleb.ppgdatacollector.DataPusher
+import ca.utoronto.caleb.ppgdatacollector.DataWrangler
 import org.json.JSONObject
 import ca.utoronto.caleb.ppgdatacollector.Sensor
 
@@ -13,6 +13,6 @@ class MAX30102Reader(context: Context, private val sensor: Sensor): AbstractDevi
         if (jsonString.isBlank())
             return
         val json= JSONObject(jsonString)
-        DataPusher.push(json, sensor)
+        DataWrangler.push(json, sensor)
     }
 }

@@ -2,8 +2,7 @@ package ca.utoronto.caleb.ppgdatacollector.readers
 
 import android.content.Context
 import android.util.Log
-import ca.utoronto.caleb.ppgdatacollector.DataKeys
-import ca.utoronto.caleb.ppgdatacollector.DataPusher
+import ca.utoronto.caleb.ppgdatacollector.DataWrangler
 import ca.utoronto.caleb.ppgdatacollector.Sensor
 import org.json.JSONObject
 
@@ -23,14 +22,14 @@ class GroundTruthReader(context: Context, private val sensor: Sensor): AbstractD
             return
         }
 
-        dataMap[DataKeys.hr_valid] = 127 != hr
-        dataMap[DataKeys.hr] = hr
+        dataMap["hr_valid"] = 127 != hr
+        dataMap["hr"] = hr
 
-        dataMap[DataKeys.oxygen_valid] = 127 != oxygen
-        dataMap[DataKeys.oxygen] = oxygen
+        dataMap["oxygen_valid"] = 127 != oxygen
+        dataMap["oxygen"] = oxygen
 
         val json = JSONObject(dataMap)
-        DataPusher.push(json, sensor)
+        DataWrangler.push(json, sensor)
     }
 
 }
