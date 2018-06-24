@@ -114,11 +114,17 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     }
 
     fun btnClickBeginRecording(view: View) {
+        //if (!sensorsEmpty()) {
+            collectUserInformation()
+        //}
+    }
+
+    private fun sensorsEmpty(): Boolean {
         if (sensorList.isEmpty()) {
             showSnackbar("No sensors available to monitor")
-            return
+            return true
         }
-        collectUserInformation()
+        return false
     }
 
     private fun collectUserInformation() {
@@ -143,6 +149,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
 
     override fun onTrialCreated(success: Boolean) {
         if (success) {
+            showSnackbar("Trial created successfully, starting sensors.")
             startSensors()
         } else {
             showSnackbar("Failed to create Trial.")
