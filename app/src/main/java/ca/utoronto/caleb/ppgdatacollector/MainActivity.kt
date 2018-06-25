@@ -13,6 +13,8 @@ import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
+import ca.utoronto.caleb.ppgdatacollector.data.DataWrangler
+import ca.utoronto.caleb.ppgdatacollector.data.TrialCreatedCallback
 import ca.utoronto.caleb.ppgdatacollector.ui.DeviceInfoAdapter
 import ca.utoronto.caleb.ppgdatacollector.ui.DeviceTypeSelectedCallback
 import ca.utoronto.caleb.ppgdatacollector.ui.SelectDeviceDialogFragment

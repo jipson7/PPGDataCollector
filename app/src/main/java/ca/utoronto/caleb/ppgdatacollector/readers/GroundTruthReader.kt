@@ -2,7 +2,7 @@ package ca.utoronto.caleb.ppgdatacollector.readers
 
 import android.content.Context
 import android.util.Log
-import ca.utoronto.caleb.ppgdatacollector.DataWrangler
+import ca.utoronto.caleb.ppgdatacollector.data.DataWrangler
 import ca.utoronto.caleb.ppgdatacollector.Sensor
 import org.json.JSONObject
 

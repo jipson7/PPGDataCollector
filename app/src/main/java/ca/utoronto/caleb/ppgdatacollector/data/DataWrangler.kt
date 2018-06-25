@@ -1,5 +1,6 @@
-package ca.utoronto.caleb.ppgdatacollector
+package ca.utoronto.caleb.ppgdatacollector.data
 import android.util.Log
+import ca.utoronto.caleb.ppgdatacollector.Sensor
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.SocketException
@@ -45,8 +46,7 @@ object DataWrangler {
 
     fun createDevice(sensor: Sensor, callback: DeviceCreatedCallback) {
         if (trialId == null) {
-            Log.e(tag, "Trial does not exist, cannot create device.")
-            callback.onDeviceCreated(false)
+            throw RuntimeException("Cannot create a device for a trial that does not exist")
         }
         val json = sensor.toJson()
         thread {
