@@ -10,6 +10,11 @@ object DataWrangler {
 
     private const val tag = "DataWrangler"
     private var trialId: String? = null
+    private val deviceIds = mutableMapOf<Sensor, String>()
+
+
+    private const val ip = "10.70.2.129"
+    private const val rootUrl = "http://$ip:3000/trials"
 
     fun push(data: JSONObject, sensor: Sensor) {
         val time = System.currentTimeMillis()
@@ -28,7 +33,7 @@ object DataWrangler {
         thread {
             try {
                 val response = httpPost(
-                        url = "http://192.168.2.35:3000/trials",
+                        url = rootUrl,
                         json = trialJson
                 )
                 if (response.statusCode == 200) {
@@ -44,6 +49,34 @@ object DataWrangler {
                 callback.onTrialCreated(false)
             }
         }
+    }
+
+    fun createDevice(sensor: Sensor, callback: DeviceCreatedCallback) {
+        if (trialId == null) {
+            Log.e(tag, "Trial does not exist, cannot create device.")
+            callback.onDeviceCreated(false)
+        }
+        val json = sensor.toJson()
+        thread {
+            try {
+                val response = httpPost(
+                        url = "$rootUrl/$trialId",
+                        json = json
+                )
+                if (response.statusCode == 200) {
+                    deviceIds[sensor] = response.text
+                    callback.onDeviceCreated(true)
+                }
+            } catch (e: SocketException) {
+                Log.e(tag, "Failed to contact server. Is it running?")
+                callback.onDeviceCreated(false)
+            } catch (e: Exception) {
+                Log.e(tag, "Failed to contact server")
+                e.printStackTrace()
+                callback.onDeviceCreated(false)
+            }
+        }
+
     }
 
 }

@@ -5,9 +5,11 @@ import android.hardware.usb.UsbDevice
 import android.util.Log
 import ca.utoronto.caleb.ppgdatacollector.readers.GroundTruthReader
 import ca.utoronto.caleb.ppgdatacollector.readers.MAX30102Reader
+import org.json.JSONArray
+import org.json.JSONObject
 
 
-class Sensor(val deviceType: String, val device: UsbDevice, context: Context) {
+class Sensor(val deviceType: String, val device: UsbDevice, context: Context): DeviceCreatedCallback {
 
     companion object {
         const val FINGERTIP_SENSOR = "Fingertip Sensor"
@@ -30,12 +32,28 @@ class Sensor(val deviceType: String, val device: UsbDevice, context: Context) {
     private val thread: Thread = Thread(reader)
 
     fun start() {
-        Log.d(tag, "Starting Sensor")
-        thread.start()
+        Log.d(tag, "Creating sensor in db.")
+        DataWrangler.createDevice(this, this)
     }
 
     fun stop() {
         Log.d(tag, "Stop Sensor")
         thread.interrupt()
     }
-}
+
+    fun toJson(): JSONObject {
+        val obj = JSONObject()
+        obj.put("type", deviceType)
+        obj.put("name", deviceName)
+        obj.put("data", JSONArray())
+        return obj
+    }
+
+    override fun onDeviceCreated(success: Boolean) {
+        if (success) {
+            Log.d(tag, "Device created successfully.")
+            Log.d(tag, "Starting sensor.")
+            thread.start()
+        }
+    }
+ }

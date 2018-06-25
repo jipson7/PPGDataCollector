@@ -114,9 +114,9 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     }
 
     fun btnClickBeginRecording(view: View) {
-        //if (!sensorsEmpty()) {
+        if (!sensorsEmpty()) {
             collectUserInformation()
-        //}
+        }
     }
 
     private fun sensorsEmpty(): Boolean {
