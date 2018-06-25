@@ -13,7 +13,7 @@ object DataWrangler {
     private val deviceIds = mutableMapOf<Sensor, String>()
 
 
-    private const val ip = "10.70.2.129"
+    private const val ip = "192.168.1.120"
     private const val rootUrl = "http://$ip:3000/trials"
 
     fun createTrial(name: String, age: Int?, copd: Boolean, info: String, callback: TrialCreatedCallback) {

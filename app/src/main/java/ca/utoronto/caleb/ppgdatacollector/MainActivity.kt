@@ -74,9 +74,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
                     UsbManager.ACTION_USB_DEVICE_ATTACHED -> deviceAttached(device)
                     UsbManager.ACTION_USB_DEVICE_DETACHED -> deviceDetached()
                     actionUsbPermission -> {
-                        if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                            startSensors()
-                        } else {
+                        if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                             reset("Permission not granted")
                         }
                     }
@@ -101,13 +99,16 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     }
 
     private fun reset(reason: String) {
-        stopSensors()
+        sensorList.map {it.stop()}
         showSnackbar("$reason. Reconnect all sensors.")
         sensorList.clear()
         deviceInfoAdapter.notifyDataSetChanged()
     }
 
     override fun onDeviceTypeSelected(deviceType: String, device: UsbDevice) {
+        if (!usbManager.hasPermission(device)) {
+            usbManager.requestPermission(device, permissionIntent)
+        }
         val sensor = Sensor(deviceType, device, this)
         sensorList.add(sensor)
         deviceInfoAdapter.notifyDataSetChanged()
@@ -150,24 +151,9 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     override fun onTrialCreated(success: Boolean) {
         if (success) {
             showSnackbar("Trial created successfully, starting sensors.")
-            startSensors()
+            sensorList.map {it.start()}
         } else {
             showSnackbar("Failed to create Trial.")
-        }
-    }
-
-    private fun startSensors() {
-        for (sensor in sensorList) {
-            if (!usbManager.hasPermission(sensor.device)) {
-                usbManager.requestPermission(sensor.device, permissionIntent)
-                return
-            }
-            sensor.start()
-        }
-    }
-    private fun stopSensors() {
-        for (sensor in sensorList) {
-            sensor.stop()
         }
     }
 

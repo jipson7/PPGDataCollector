@@ -15,8 +15,8 @@ class GroundTruthReader(context: Context, private val sensor: Sensor): AbstractD
         val oxygen: Int
 
         try {
-            hr = Integer.parseInt(dataRead.get(6) + "" + dataRead.get(7), 16)
-            oxygen = Integer.parseInt(dataRead.get(8) + "" + dataRead.get(9), 16)
+            hr = Integer.parseInt(dataRead[6] + "" + dataRead[7], 16)
+            oxygen = Integer.parseInt(dataRead[8] + "" + dataRead[9], 16)
         } catch (e: StringIndexOutOfBoundsException) {
             Log.e(tag, "Malformed data received.")
             return

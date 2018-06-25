@@ -52,7 +52,7 @@ class Sensor(val deviceType: String, val device: UsbDevice, context: Context): D
     override fun onDeviceCreated(success: Boolean) {
         if (success) {
             Log.d(tag, "Device created successfully.")
-            Log.d(tag, "Starting sensor.")
+            Log.d(tag, "Starting $deviceType.")
             thread.start()
         }
     }
