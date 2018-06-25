@@ -22,6 +22,7 @@ object DataWrangler {
         userJson.put("age", age)
         userJson.put("copd", copd)
         val trialJson = JSONObject()
+        trialJson.put("start", System.currentTimeMillis())
         trialJson.put("user", userJson)
         trialJson.put("info", info)
         trialJson.put("devices", JSONArray())
