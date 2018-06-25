@@ -29,7 +29,7 @@ class GroundTruthReader(context: Context, private val sensor: Sensor): AbstractD
         dataMap["oxygen"] = oxygen
 
         val json = JSONObject(dataMap)
-        DataWrangler.push(json, sensor)
+        DataWrangler.createData(json, sensor)
     }
 
 }

@@ -13,6 +13,6 @@ class MAX30102Reader(context: Context, private val sensor: Sensor): AbstractDevi
         if (jsonString.isBlank())
             return
         val json= JSONObject(jsonString)
-        DataWrangler.push(json, sensor)
+        DataWrangler.createData(json, sensor)
     }
 }

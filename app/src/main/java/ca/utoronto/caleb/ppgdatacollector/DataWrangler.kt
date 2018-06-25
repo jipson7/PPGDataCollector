@@ -16,11 +16,6 @@ object DataWrangler {
     private const val ip = "10.70.2.129"
     private const val rootUrl = "http://$ip:3000/trials"
 
-    fun push(data: JSONObject, sensor: Sensor) {
-        val time = System.currentTimeMillis()
-        Log.d(tag, "$time : $data")
-    }
-
     fun createTrial(name: String, age: Int?, copd: Boolean, info: String, callback: TrialCreatedCallback) {
         val userJson = JSONObject()
         userJson.put("name", name)
@@ -77,6 +72,33 @@ object DataWrangler {
             }
         }
 
+    }
+
+
+    fun createData(data: JSONObject, sensor: Sensor) {
+        if (!deviceIds.containsKey(sensor)) {
+            throw RuntimeException("Cannot create a data point for a device that does not exist")
+        }
+
+        val deviceId = deviceIds[sensor]
+
+        val time = System.currentTimeMillis()
+        data.put("timestamp", time)
+        thread {
+            try {
+                val response = httpPost(
+                        url = "$rootUrl/$trialId/devices/$deviceId",
+                        json = data
+                )
+                if (response.statusCode != 200) {
+                    Log.e(tag, "Server error when saving datum ${response.statusCode}")
+                    throw RuntimeException("Server did not return 200 on data creation request")
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "Exception thrown when saving datum to server")
+                e.printStackTrace()
+            }
+        }
     }
 
 }
