@@ -38,6 +38,8 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
 
     private lateinit var permissionIntent: PendingIntent
 
+    private var running: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,8 +101,8 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     }
 
     private fun reset(reason: String) {
-        sensorList.map {it.stop()}
-        showSnackbar("$reason. Reconnect all sensors.")
+        stopSensors()
+        showSnackbar("$reason. Reconnect all sensors to begin again.")
         sensorList.clear()
         deviceInfoAdapter.notifyDataSetChanged()
     }
@@ -114,9 +116,13 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
         deviceInfoAdapter.notifyDataSetChanged()
     }
 
-    fun btnClickBeginRecording(view: View) {
-        if (!sensorsEmpty()) {
-            collectUserInformation()
+    fun btnClickRecord(view: View) {
+        if (running) {
+            reset("User ended session")
+        } else {
+            if (!sensorsEmpty()) {
+                collectUserInformation()
+            }
         }
     }
 
@@ -151,9 +157,25 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     override fun onTrialCreated(success: Boolean) {
         if (success) {
             showSnackbar("Trial created successfully, starting sensors.")
-            sensorList.map {it.start()}
+            startSensors()
         } else {
             showSnackbar("Failed to create Trial.")
+        }
+    }
+
+    private fun startSensors() {
+        running = true
+        sensorList.map {it.start()}
+        this@MainActivity.runOnUiThread {
+            fab.setImageDrawable(resources.getDrawable(android.R.drawable.ic_media_pause))
+        }
+    }
+
+    private fun stopSensors() {
+        running = false
+        sensorList.map {it.stop()}
+        this@MainActivity.runOnUiThread {
+            fab.setImageDrawable(resources.getDrawable(android.R.drawable.ic_media_play))
         }
     }
 

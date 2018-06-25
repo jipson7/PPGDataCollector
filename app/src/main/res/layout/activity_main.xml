@@ -69,7 +69,7 @@
         android:layout_gravity="end|bottom"
         android:src="@android:drawable/ic_media_play"
         android:layout_margin="16dp"
-        android:onClick="btnClickBeginRecording"/>
+        android:onClick="btnClickRecord"/>
 
 
 </android.support.design.widget.CoordinatorLayout>
