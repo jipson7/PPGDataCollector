@@ -39,10 +39,6 @@ object DataWrangler {
             } catch (e: SocketException) {
                 Log.e(tag, "Failed to contact server. Is it running?")
                 callback.onTrialCreated(false)
-            } catch (e: Exception) {
-                Log.e(tag, "Failed to contact server")
-                e.printStackTrace()
-                callback.onTrialCreated(false)
             }
         }
     }
@@ -66,10 +62,6 @@ object DataWrangler {
             } catch (e: SocketException) {
                 Log.e(tag, "Failed to contact server. Is it running?")
                 callback.onDeviceCreated(false)
-            } catch (e: Exception) {
-                Log.e(tag, "Failed to contact server")
-                e.printStackTrace()
-                callback.onDeviceCreated(false)
             }
         }
 
@@ -86,18 +78,13 @@ object DataWrangler {
         val time = System.currentTimeMillis()
         data.put("timestamp", time)
         thread {
-            try {
-                val response = httpPost(
-                        url = "$rootUrl/$trialId/devices/$deviceId",
-                        json = data
-                )
-                if (response.statusCode != 200) {
-                    Log.e(tag, "Server error when saving datum ${response.statusCode}")
-                    throw RuntimeException("Server did not return 200 on data creation request")
-                }
-            } catch (e: Exception) {
-                Log.e(tag, "Exception thrown when saving datum to server")
-                e.printStackTrace()
+            val response = httpPost(
+                    url = "$rootUrl/$trialId/devices/$deviceId",
+                    json = data
+            )
+            if (response.statusCode != 200) {
+                Log.e(tag, "Server error when saving datum ${response.statusCode}")
+                throw RuntimeException("Server did not return 200 on data creation request")
             }
         }
     }
