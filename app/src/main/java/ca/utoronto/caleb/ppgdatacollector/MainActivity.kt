@@ -137,7 +137,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     }
 
     private fun collectUserInformation() {
-        val name: String = username.text.toString()
+        val name: String = username.text.toString().toLowerCase()
         if (name.isBlank()) {
             showSnackbar("Enter a name.")
             return
