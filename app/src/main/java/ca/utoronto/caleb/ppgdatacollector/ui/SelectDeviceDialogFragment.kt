@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.app.AlertDialog
 import android.hardware.usb.UsbDevice
 import android.util.Log
+import ca.utoronto.caleb.ppgdatacollector.MainActivity
 import ca.utoronto.caleb.ppgdatacollector.Sensor
 
 
@@ -13,26 +14,24 @@ class SelectDeviceDialogFragment: DialogFragment() {
 
     private val debugTag = "device_dialog"
 
-    private val deviceTypes = Sensor.DEVICE_TYPES
-
     lateinit var deviceTypeSelectedCallback: DeviceTypeSelectedCallback
 
     lateinit var usbDevice: UsbDevice
 
-    var selectedDeviceType: String = deviceTypes[0]
-
-    init {
-        Log.d(debugTag, "Dialog object created")
-    }
-
+    var selectedDeviceType: String? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("Select device type: ")
-        builder.setSingleChoiceItems(deviceTypes, 0) { _, which ->
-            selectedDeviceType = deviceTypes[which]
+        builder.setSingleChoiceItems(Sensor.DEVICE_TYPES, -1) { _, which ->
+            selectedDeviceType = Sensor.DEVICE_TYPES[which]
         }.setPositiveButton("Confirm") { _, _ ->
-            deviceTypeSelectedCallback.onDeviceTypeSelected(selectedDeviceType, usbDevice)
+            if (selectedDeviceType != null) {
+                deviceTypeSelectedCallback.onDeviceTypeSelected(selectedDeviceType!!, usbDevice)
+            } else {
+                throw RuntimeException("Must select a device type");
+            }
+
         }.setNegativeButton("Cancel") { _, _ ->
             Log.d(debugTag, "Device selection cancelled")
         }
