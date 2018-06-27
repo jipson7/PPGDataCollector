@@ -1,10 +1,10 @@
 package ca.utoronto.caleb.ppgdatacollector.data
 import android.util.Log
 import ca.utoronto.caleb.ppgdatacollector.Sensor
+import kotlinx.coroutines.experimental.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.SocketException
-import kotlin.concurrent.thread
 import khttp.post as httpPost
 
 object DataWrangler {
@@ -27,7 +27,7 @@ object DataWrangler {
         trialJson.put("user", userJson)
         trialJson.put("info", info)
         trialJson.put("devices", JSONArray())
-        thread {
+        launch {
             try {
                 val response = httpPost(
                         url = rootUrl,
@@ -49,7 +49,7 @@ object DataWrangler {
             throw RuntimeException("Cannot create a device for a trial that does not exist")
         }
         val json = sensor.toJson()
-        thread {
+        launch {
             try {
                 val response = httpPost(
                         url = "$rootUrl/$trialId",
@@ -77,7 +77,7 @@ object DataWrangler {
 
         val time = System.currentTimeMillis()
         data.put("timestamp", time)
-        thread {
+        launch {
             val response = httpPost(
                     url = "$rootUrl/$trialId/devices/$deviceId",
                     json = data
