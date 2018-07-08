@@ -3,26 +3,22 @@ package ca.utoronto.caleb.ppgdatacollector
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.util.Log
-import ca.utoronto.caleb.ppgdatacollector.data.DataWrangler
-import ca.utoronto.caleb.ppgdatacollector.data.DeviceCreatedCallback
 import ca.utoronto.caleb.ppgdatacollector.readers.GroundTruthReader
 import ca.utoronto.caleb.ppgdatacollector.readers.MAX30102Reader
-import org.json.JSONArray
-import org.json.JSONObject
 
 
-class Sensor(val deviceType: String, val device: UsbDevice, context: Context): DeviceCreatedCallback {
+class Sensor(val deviceType: Int, val device: UsbDevice, context: Context) {
 
     companion object {
-        const val FINGERTIP_SENSOR = "Fingertip Sensor"
-        const val WRIST_SENSOR = "Wrist Worn Device"
-        const val GROUND_TRUTH = "Ground Truth Sensor"
-        val DEVICE_TYPES = arrayOf(FINGERTIP_SENSOR, WRIST_SENSOR, GROUND_TRUTH)
+        const val WRIST_SENSOR = 0
+        const val FINGERTIP_SENSOR = 1
+        const val GROUND_TRUTH = 2
+        val DEVICE_NAMES = arrayOf("Wrist Worn Device", "Fingertip Reflective", "Fingertip Transitive")
     }
 
-    val tag = deviceType
-
     val deviceName = "${device.manufacturerName} ${device.productName}"
+
+    private val tag = "Device $deviceType"
 
     private val reader = when (deviceType) {
         GROUND_TRUTH -> GroundTruthReader(context, this)
@@ -34,8 +30,7 @@ class Sensor(val deviceType: String, val device: UsbDevice, context: Context): D
     private val thread: Thread = Thread(reader)
 
     fun start() {
-        Log.d(tag, "Creating sensor in db.")
-        DataWrangler.createDevice(this, this)
+        thread.start()
     }
 
     fun stop() {
@@ -43,19 +38,4 @@ class Sensor(val deviceType: String, val device: UsbDevice, context: Context): D
         thread.interrupt()
     }
 
-    fun toJson(): JSONObject {
-        val obj = JSONObject()
-        obj.put("type", deviceType)
-        obj.put("name", deviceName)
-        obj.put("data", JSONArray())
-        return obj
-    }
-
-    override fun onDeviceCreated(success: Boolean) {
-        if (success) {
-            Log.d(tag, "Device created successfully.")
-            Log.d(tag, "Starting $deviceType.")
-            thread.start()
-        }
-    }
  }

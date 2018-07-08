@@ -1,8 +1,6 @@
 package ca.utoronto.caleb.ppgdatacollector.data
 import android.util.Log
-import ca.utoronto.caleb.ppgdatacollector.Sensor
 import kotlinx.coroutines.experimental.launch
-import org.json.JSONArray
 import org.json.JSONObject
 import java.net.SocketException
 import khttp.post as httpPost
@@ -11,7 +9,6 @@ object DataWrangler {
 
     private const val tag = "DataWrangler"
     private var trialId: String? = null
-    private val deviceIds = mutableMapOf<Sensor, String>()
 
 
     private const val ip = "192.168.1.120"
@@ -23,10 +20,8 @@ object DataWrangler {
         userJson.put("age", age)
         userJson.put("copd", copd)
         val trialJson = JSONObject()
-        trialJson.put("start", System.currentTimeMillis())
         trialJson.put("user", userJson)
         trialJson.put("info", info)
-        trialJson.put("devices", JSONArray())
         launch {
             try {
                 val response = httpPost(
@@ -44,43 +39,19 @@ object DataWrangler {
         }
     }
 
-    fun createDevice(sensor: Sensor, callback: DeviceCreatedCallback) {
-        if (trialId == null) {
-            throw RuntimeException("Cannot create a device for a trial that does not exist")
-        }
-        val json = sensor.toJson()
-        launch {
-            try {
-                val response = httpPost(
-                        url = "$rootUrl/$trialId",
-                        json = json
-                )
-                if (response.statusCode == 200) {
-                    deviceIds[sensor] = response.text
-                    callback.onDeviceCreated(true)
-                }
-            } catch (e: SocketException) {
-                Log.e(tag, "Failed to contact server. Is it running?")
-                callback.onDeviceCreated(false)
-            }
-        }
 
-    }
+    fun createData(data: JSONObject, deviceType: Int) {
 
+        val message = JSONObject()
 
-    fun createData(data: JSONObject, sensor: Sensor) {
-        if (!deviceIds.containsKey(sensor)) {
-            throw RuntimeException("Cannot create a data point for a device that does not exist")
-        }
+        message.put("timestamp", System.currentTimeMillis())
+        message.put("device", deviceType)
+        message.put("data", data)
 
-        val deviceId = deviceIds[sensor]
-
-        val time = System.currentTimeMillis()
-        data.put("timestamp", time)
         launch {
             val response = httpPost(
-                    url = "$rootUrl/$trialId/devices/$deviceId",
-                    json = data
+                    url = "$rootUrl/$trialId",
+                    json = message
             )
             if (response.statusCode != 200) {
                 Log.e(tag, "Server error when saving datum ${response.statusCode}")

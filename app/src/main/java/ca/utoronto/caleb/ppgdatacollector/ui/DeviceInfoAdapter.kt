@@ -21,7 +21,7 @@ class DeviceInfoAdapter(val sensors: MutableList<Sensor>, val context: Context):
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val sensor = sensors.get(position)
-        holder.tvDeviceType.text = sensor.deviceType
+        holder.tvDeviceType.text = "(Type ${sensor.deviceType})"
         holder.tvDeviceName.text = sensor.deviceName
     }
 

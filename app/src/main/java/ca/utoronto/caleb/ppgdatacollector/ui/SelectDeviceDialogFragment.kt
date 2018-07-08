@@ -18,13 +18,13 @@ class SelectDeviceDialogFragment: DialogFragment() {
 
     lateinit var usbDevice: UsbDevice
 
-    var selectedDeviceType: String? = null
+    var selectedDeviceType: Int? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("Select device type: ")
-        builder.setSingleChoiceItems(Sensor.DEVICE_TYPES, -1) { _, which ->
-            selectedDeviceType = Sensor.DEVICE_TYPES[which]
+        builder.setSingleChoiceItems(Sensor.DEVICE_NAMES, -1) { _, which: Int ->
+            selectedDeviceType = which
         }.setPositiveButton("Confirm") { _, _ ->
             if (selectedDeviceType != null) {
                 deviceTypeSelectedCallback.onDeviceTypeSelected(selectedDeviceType!!, usbDevice)

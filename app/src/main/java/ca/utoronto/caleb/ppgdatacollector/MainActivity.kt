@@ -109,7 +109,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
         deviceInfoAdapter.notifyDataSetChanged()
     }
 
-    override fun onDeviceTypeSelected(deviceType: String, device: UsbDevice) {
+    override fun onDeviceTypeSelected(deviceType: Int, device: UsbDevice) {
         if (!usbManager.hasPermission(device)) {
             usbManager.requestPermission(device, permissionIntent)
         }
@@ -168,7 +168,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     private fun startSensors() {
         running = true
         sensorList.map {it.start()}
-        this@MainActivity.runOnUiThread {
+        runOnUiThread {
             fab.setImageDrawable(resources.getDrawable(android.R.drawable.ic_media_pause))
         }
     }
@@ -176,7 +176,7 @@ class MainActivity : Activity(), DeviceTypeSelectedCallback, TrialCreatedCallbac
     private fun stopSensors() {
         running = false
         sensorList.map {it.stop()}
-        this@MainActivity.runOnUiThread {
+        runOnUiThread {
             fab.setImageDrawable(resources.getDrawable(android.R.drawable.ic_media_play))
         }
     }
