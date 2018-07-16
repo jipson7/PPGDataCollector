@@ -9,13 +9,15 @@ abstract class AbstractDeviceReader(val context: Context, val device: UsbDevice)
 
     val tag = "DeviceReader"
 
+    var running = true
+
     override fun run() {
         val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
         val deviceConnection = usbManager.openDevice(device)
         val usbSerial = UsbSerialDevice.createUsbSerialDevice(device, deviceConnection)
         usbSerial.open()
         usbSerial.read {
-            if (!Thread.currentThread().isInterrupted()) {
+            if (running) {
                 onDataReceived(it)
             } else {
                 usbSerial.close()

@@ -35,6 +35,7 @@ class Sensor(val deviceType: Int, val device: UsbDevice, context: Context) {
 
     fun stop() {
         Log.d(tag, "Stop Sensor")
+        reader.running = false
         thread.interrupt()
     }
 
