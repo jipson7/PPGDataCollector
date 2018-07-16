@@ -11,7 +11,7 @@ object DataWrangler {
     private var trialId: String? = null
 
 
-    private const val ip = "192.168.1.120"
+    private const val ip = "10.70.2.129"
     private const val rootUrl = "http://$ip:3000/trials"
 
     fun createTrial(name: String, age: Int?, copd: Boolean, info: String, callback: TrialCreatedCallback) {
@@ -50,7 +50,7 @@ object DataWrangler {
 
         launch {
             val response = httpPost(
-                    url = "$rootUrl/$trialId",
+                    url = "$rootUrl/$trialId/data",
                     json = message
             )
             if (response.statusCode != 200) {
