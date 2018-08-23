@@ -56,6 +56,8 @@ object DataWrangler {
             if (response.statusCode != 200) {
                 Log.e(tag, "Server error when saving datum ${response.statusCode}")
                 throw RuntimeException("Server did not return 200 on data creation request")
+            } else {
+                Log.d(tag, "Saved $deviceType")
             }
         }
     }
